@@ -39,6 +39,8 @@ Tutorials written for Hydrogen 2023–2025 (Remix-era) reference APIs that **do 
 
 ## 3. Feature inventory
 
+Statuses below were updated after implementation and testing (see docs/FEATURE_IMPLEMENTATION.md for verification).
+
 Status legend: **Real** = real Hydrogen code path; **Mock adapter** = real Hydrogen code
 running against the local mock Storefront API; **Credentials** = needs a real store;
 **Custom** = storefront feature built by the app, not a Hydrogen primitive;
@@ -49,73 +51,73 @@ running against the local mock Storefront API; **Credentials** = needs a real st
 ### A. Storefront API client
 | Feature | API | What it does | Where | Status | Credentials? | Docs |
 | --- | --- | --- | --- | --- | --- | --- |
-| Typed GraphQL | `gql()`, `StorefrontApi.ResultOf` | Type-infers results from the query string; no codegen | every loader, `/lab/storefront-api` | Planned | No | [client](https://shopify.dev/docs/api/hydrogen/latest) |
-| Client types | `createStorefrontClient({type:"public"\|"private"\|"private_no_buyer_context"})` | Token/buyer-context aware clients | `app/lib/shopify/storefront.server.ts` | Planned | Private token for `private` | same |
-| Injectable fetch | `config.fetch` | Swap transport; used for DEMO_MODE | `app/lib/mock-api` | Planned (mock adapter) | No | skill `hydrogen-storefront-client` |
-| Errors | `StorefrontApiError`, `StorefrontTimeoutError`, `errors[]` | Transport errors throw; GraphQL errors return | `/lab/storefront-api` | Planned | No | same |
-| i18n auto-injection | `$country`/`$language` + `@inContext` | Locale filled from request context | all queries | Planned | No | skill `hydrogen-markets` |
+| Typed GraphQL | `gql()`, `StorefrontApi.ResultOf` | Type-infers results from the query string; no codegen | every loader, `/lab/storefront-api` | Implemented | No | [client](https://shopify.dev/docs/api/hydrogen/latest) |
+| Client types | `createStorefrontClient({type:"public"\|"private"\|"private_no_buyer_context"})` | Token/buyer-context aware clients | `app/lib/shopify/storefront.server.ts` | Implemented | Private token for `private` | same |
+| Injectable fetch | `config.fetch` | Swap transport; used for DEMO_MODE | `app/lib/mock-api` | Implemented (mock adapter) | No | skill `hydrogen-storefront-client` |
+| Errors | `StorefrontApiError`, `StorefrontTimeoutError`, `errors[]` | Transport errors throw; GraphQL errors return | `/lab/storefront-api` | Implemented | No | same |
+| i18n auto-injection | `$country`/`$language` + `@inContext` | Locale filled from request context | all queries | Implemented | No | skill `hydrogen-markets` |
 
 ### B. Request handlers
 | Feature | API | Where | Status | Credentials? |
 | --- | --- | --- | --- | --- |
-| Pre-routing gate | `handleShopifyRoutes()` | root middleware | Planned | No |
-| Post-404 redirects | `handleShopifyRedirects()` (`/admin`, URL redirects, standard routes) | root middleware | Planned | `/admin` + URL redirects need a store |
-| Cart API | `createCartServerHandlers()` → `/api/cart` | root middleware | Planned (mock adapter) | No |
-| Predictive search API | `createPredictiveSearchServerHandlers()` → `/api/predictive-search` | root middleware | Planned (mock adapter) | No |
-| Checkout redirect | `/checkout` → `cart.checkoutUrl` | root middleware | Planned (mock adapter: redirects to a demo checkout page) | Real checkout needs a store |
-| SFAPI proxy | `/api/2026-10/graphql.json` | root middleware | Planned (demo: served by mock API) | No |
-| MCP / UCP proxies | `/api/mcp`, `/.well-known/ucp` | `/lab/agentic` | Planned (demo: local MCP-shaped endpoint) | Yes for real Storefront MCP |
-| Variant id redirects | `?variant=<id>` via `routeTemplates` | product route | Planned | No |
-| Route templates | `defineShopifyRouteTemplates()` | `app/lib/shopify/routes.ts` | Planned | No |
+| Pre-routing gate | `handleShopifyRoutes()` | root middleware | Implemented | No |
+| Post-404 redirects | `handleShopifyRedirects()` (`/admin`, URL redirects, standard routes) | root middleware | Implemented | `/admin` + URL redirects need a store |
+| Cart API | `createCartServerHandlers()` → `/api/cart` | root middleware | Implemented (mock adapter) | No |
+| Predictive search API | `createPredictiveSearchServerHandlers()` → `/api/predictive-search` | root middleware | Implemented (mock adapter) | No |
+| Checkout redirect | `/checkout` → `cart.checkoutUrl` | root middleware | Implemented (mock adapter: redirects to /demo-checkout) | Real checkout needs a store |
+| SFAPI proxy | `/api/2026-10/graphql.json` | root middleware | Implemented (demo: served by mock API) | No |
+| MCP / UCP proxies | `/api/mcp`, `/.well-known/ucp` | `/lab/agentic` | Implemented (demo: simulated MCP + UCP profile) | Yes for real Storefront MCP |
+| Variant id redirects | `?variant=<id>` via `routeTemplates` | product route | Implemented | No |
+| Route templates | `defineShopifyRouteTemplates()` | `app/lib/shopify/routes.ts` | Implemented | No |
 
 ### C. Product and collection primitives
 | Feature | API | Where | Status |
 | --- | --- | --- | --- |
-| Variant selection | `createProductComponents()`, `getSelectedProductOptions`, `buildProductSelectionSearchParams`, `canAddToCart` | `/products/:handle` | Planned |
-| Product form | `useProductForm().register/formProps` | PDP, quick add | Planned |
-| Collection browsing | `CollectionProvider`, `useCollection`, `parseCollectionParams`, `serializeCollectionParams`, `getFilterRemovalUrl`, `getSortByValue`, `isFilterInputActive` | `/collections/:handle`, `/search` | Planned |
-| Pagination | cursor GET links (`after`) | collection/search | Planned |
+| Variant selection | `createProductComponents()`, `getSelectedProductOptions`, `buildProductSelectionSearchParams`, `canAddToCart` | `/products/:handle` | Implemented |
+| Product form | `useProductForm().register/formProps` | PDP, quick add | Implemented |
+| Collection browsing | `CollectionProvider`, `useCollection`, `parseCollectionParams`, `serializeCollectionParams`, `getFilterRemovalUrl`, `getSortByValue`, `isFilterInputActive` | `/collections/:handle`, `/search` | Implemented |
+| Pagination | cursor GET links (`after`) | collection/search | Implemented |
 
 ### D. Cart
 | Feature | API | Where | Status |
 | --- | --- | --- | --- |
-| Cart store + optimistic UI | `createCartComponents()` → `CartProvider`, `useCart`, `useCartForm`, `useCartActions` | drawer, `/cart` | Planned |
-| Server-seeded cart | `cartHandlers.get()` → `initialData` | root loader | Planned |
-| Progressive enhancement | native form POST to `/api/cart` sets cookie | `/cart` | Planned |
-| Drawer | `<dialog>` + `window.Shopify.actions.openCart` | root layout | Planned |
-| Custom cart fields | `fragment: CartFragment` | discount allocations, inventory | Planned |
-| Out-of-band mutation | `refresh()` after gift card apply | `/cart` | Planned |
+| Cart store + optimistic UI | `createCartComponents()` → `CartProvider`, `useCart`, `useCartForm`, `useCartActions` | drawer, `/cart` | Implemented |
+| Server-seeded cart | `cartHandlers.get()` → `initialData` | root loader | Implemented |
+| Progressive enhancement | native form POST to `/api/cart` sets cookie | `/cart` | Implemented |
+| Drawer | `<dialog>` + `window.Shopify.actions.openCart` | root layout | Implemented |
+| Custom cart fields | `fragment: CartFragment` | discount allocations, inventory | Implemented |
+| Out-of-band mutation | `refresh()` after gift card apply | `/cart` | Implemented |
 
 ### E. Search
-`PredictiveSearchProvider`, `usePredictiveSearch`, `usePredictiveSearchForm`, `getPredictiveSearchItemUrl`; full `/search` page reusing the collection browser. Planned (mock adapter).
+`PredictiveSearchProvider`, `usePredictiveSearch`, `usePredictiveSearchForm`, `getPredictiveSearchItemUrl`; full `/search` page reusing the collection browser. Implemented (mock adapter).
 
 ### F. Customer accounts
 | Feature | API | Status | Credentials? |
 | --- | --- | --- | --- |
-| OAuth login/authorize/refresh/logout | `createCustomerSession`, `createCustomerAccountServerHandlers` | Wired for live mode | **Yes**: shop id, client id, HTTPS origin |
-| Typed CAAPI queries | `@shopify/hydrogen/customer-account` `gql` + `createCustomerAccountClient` | Planned (demo: mock CAAPI via injected `fetch`) | Live needs token |
-| Cart buyer identity sync | `cartServerHandlers` option | Live mode only | Yes |
+| OAuth login/authorize/refresh/logout | `createCustomerSession`, `createCustomerAccountServerHandlers` | Implemented (live mode; demo uses a profile picker) | **Yes**: shop id, client id, HTTPS origin |
+| Typed CAAPI queries | `@shopify/hydrogen/customer-account` `gql` + `createCustomerAccountClient` | Implemented (demo: mock CAAPI via injected `fetch`) | Live needs token |
+| Cart buyer identity sync | `cartServerHandlers` option | Not enabled by default; documented in SHOPIFY_CONNECTION.md | Yes |
 
 ### G. Markets
-`defineShopifyI18n` (pathname routing), `getLocalizedHref`, `getSupportedLocales`, `formatMoney` with locale; mock API converts prices per market. Planned.
+`defineShopifyI18n` (pathname routing), `getLocalizedHref`, `getSupportedLocales`, `formatMoney` with locale; mock API converts prices per market. **Implemented.**
 
 ### H. Analytics
-`ShopifyScripts`, `window.Shopify.analytics`, `AnalyticsEvent`, `useCartAnalytics`, `consent: {mode: "custom-banner"}`, `addDestination`. Planned. Shopify's own analytics delivery is disabled in demo mode, so no events reach Shopify for a fictional shop.
+`ShopifyScripts`, `window.Shopify.analytics`, `AnalyticsEvent`, `useCartAnalytics`, `consent: {mode: "custom-banner"}`, `addDestination`. **Implemented.** Shopify's own analytics delivery and PerfKit are disabled in demo mode. Customer Privacy's `consentManagement` call is answered by a simulated endpoint so consent gating works locally. **Implemented.**
 
 ### I. Shop Pay
-`ShopPayButton` (React) renders locally with no external script. Planned. Real checkout needs a store with Shop Pay enabled.
+`ShopPayButton` (React) renders locally with no external script. **Implemented.** Real checkout needs a store with Shop Pay enabled.
 
 ### J. Performance
-`Cache.long/short/none`, `createRunWithCache`, streaming with React Router promises + `Suspense`, CDN image transforms. Caching only engages on runtimes with a `cache` store (Oxygen); Node dev has none. Planned.
+`Cache.long/short/none`, `createRunWithCache`, streaming with React Router promises + `Suspense`, CDN image transforms. Caching only engages on runtimes with a `cache` store (Oxygen); Node has none, so it is demonstrated, not enabled. **Implemented** (streaming, images, SSR); **requires Oxygen** (caching).
 
 ### K. SEO
-Route `meta`, canonical links, JSON-LD, `/sitemap.xml`, `/robots.txt` (skill `hydrogen-robots-txt`). App-owned (Hydrogen ships no SEO helper). Planned.
+Route `meta`, canonical links, JSON-LD, `/sitemap.xml`, `/robots.txt` (skill `hydrogen-robots-txt`). App-owned (Hydrogen ships no SEO helper). **Implemented.**
 
 ### L. Oxygen
-Worker contract documented (`hydrogen-oxygen` skill). The app runs on Node by default. Planned (docs + compatibility notes).
+Worker contract documented (`hydrogen-oxygen` skill) and summarised in `/lab/oxygen`. The app runs on Node; code paths are worker-friendly. **Not deployed** (needs a Shopify Oxygen deployment).
 
 ### M. Agentic commerce
-`handleShopifyRoutes` proxies `/api/mcp` and `/.well-known/ucp` to the real store; WebMCP tools load via `initializeShopifyScripts`. Without a store, the lab demonstrates the flow against a local MCP-shaped endpoint. Planned.
+`handleShopifyRoutes` proxies `/api/mcp` and `/.well-known/ucp` to the real store; WebMCP tools load via `initializeShopifyScripts`. Without a store, the lab demonstrates the flow against a local, clearly labelled simulated MCP endpoint (same tool names) and a deterministic demo agent. **Implemented (simulated)**.
 
 ## 4. Works without a store vs needs credentials
 
