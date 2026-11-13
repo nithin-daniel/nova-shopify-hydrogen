@@ -123,11 +123,11 @@ export default function ProductRoute({ loaderData }: Route.ComponentProps) {
           {collection ? <> <span aria-hidden="true">/</span> <Link to={`/collections/${collection.handle}`} className="hover:text-ink">{collection.title}</Link></> : null}
           <span aria-hidden="true"> / </span><span className="text-graphite">{product.title}</span>
         </nav>
-        <div className="grid gap-10 lg:grid-cols-12 lg:gap-14">
-          <div className="lg:col-span-7">
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-10 lg:grid-cols-12 lg:gap-14">
+          <div className="min-w-0 lg:col-span-7">
             <ProductGallery product={product} />
           </div>
-          <div className="lg:col-span-5">
+          <div className="min-w-0 lg:col-span-5">
             <div className="space-y-7 lg:sticky lg:top-24">
               <header className="space-y-3">
                 <p className="eyebrow">{product.vendor} · {product.productType}</p>

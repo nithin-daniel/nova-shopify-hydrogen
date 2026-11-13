@@ -56,13 +56,13 @@ export function ProductCard({ product, priority = false, sizes }: { product: Pro
             onClick={() => localList.toggle("compare", product.handle)}
             aria-pressed={inCompare}
             aria-label={inCompare ? `Remove ${product.title} from comparison` : `Compare ${product.title}`}
-            className={`grid size-9 place-items-center rounded-full backdrop-blur transition md:opacity-0 md:group-hover:opacity-100 focus-visible:opacity-100 ${inCompare ? "bg-ink text-paper md:opacity-100" : "bg-paper/80 hover:bg-paper"}`}
+            className={`hidden size-9 place-items-center rounded-full backdrop-blur transition md:grid md:opacity-0 md:group-hover:opacity-100 focus-visible:opacity-100 ${inCompare ? "bg-ink text-paper md:opacity-100" : "bg-paper/80 hover:bg-paper"}`}
           >
             <Icon name="compare" size={16} />
           </button>
         </div>
 
-        <div className="absolute inset-x-3 bottom-3 flex gap-2 transition duration-300 md:translate-y-2 md:opacity-0 md:group-hover:translate-y-0 md:group-hover:opacity-100 md:focus-within:translate-y-0 md:focus-within:opacity-100">
+        <div className="absolute inset-x-3 bottom-3 hidden gap-2 transition duration-300 md:flex md:translate-y-2 md:opacity-0 md:group-hover:translate-y-0 md:group-hover:opacity-100 md:focus-within:translate-y-0 md:focus-within:opacity-100">
           {product.availableForSale && variant ? (
             singleVariant ? (
               <button
@@ -85,6 +85,17 @@ export function ProductCard({ product, priority = false, sizes }: { product: Pro
             <Icon name="eye" size={17} />
           </button>
         </div>
+        {product.availableForSale && variant ? (
+          <button
+            type="button"
+            className="absolute right-2 bottom-2 grid size-10 place-items-center rounded-full bg-paper/90 shadow-sm backdrop-blur md:hidden"
+            aria-label={singleVariant ? `Add ${product.title} to bag` : `Choose options for ${product.title}`}
+            disabled={busy}
+            onClick={() => (singleVariant ? add({ ...variant, image: product.featuredImage, product: { title: product.title, handle: product.handle } }) : openQuickView(product.handle))}
+          >
+            <Icon name="plus" size={18} />
+          </button>
+        ) : null}
       </div>
 
       <div className="flex flex-1 flex-col gap-1 pt-3.5">

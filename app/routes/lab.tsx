@@ -14,8 +14,8 @@ export default function LabLayout({ loaderData }: Route.ComponentProps) {
   const localize = useLocalizedPath();
   const r = loaderData.runtime;
   return (
-    <div className="container-nova grid gap-10 pt-10 lg:grid-cols-[15rem_1fr]">
-      <aside className="lg:sticky lg:top-24 lg:h-[calc(100vh-7rem)] lg:overflow-y-auto">
+    <div className="container-nova grid grid-cols-[minmax(0,1fr)] gap-10 pt-10 lg:grid-cols-[15rem_minmax(0,1fr)]">
+      <aside className="min-w-0 lg:sticky lg:top-24 lg:h-[calc(100vh-7rem)] lg:overflow-y-auto">
         <NavLink to={localize("/lab")} end className="mb-6 block">
           <p className="eyebrow">Hydrogen 2026.10</p>
           <p className="display text-3xl">The <span className="serif-accent">Lab</span></p>

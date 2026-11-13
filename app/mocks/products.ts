@@ -1094,7 +1094,7 @@ export const GIFT_CARD_PRODUCT: MockProduct = {
     $100: { price: usd(100) },
     $250: { price: usd(250) },
   }),
-  images: images("NOVA Gift Card", ["mec/walnut-and-brushed-metal-desk-organizer", 1]),
+  images: [{ url: "/images/gift-card.svg", width: 800, height: 1000, alt: "NOVA Gift Card" }],
   createdAt: "2025-01-01T09:00:00Z",
   salesRank: 40,
   details: details({

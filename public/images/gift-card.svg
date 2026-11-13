@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" width="800" height="1000">
+  <rect width="800" height="1000" fill="#e9e3d8"/>
+  <g transform="translate(110 290) rotate(-8 290 180)">
+    <rect width="580" height="365" rx="22" fill="#141414"/>
+    <circle cx="470" cy="110" r="150" fill="none" stroke="#2a2a28" stroke-width="2"/>
+    <circle cx="470" cy="110" r="100" fill="none" stroke="#2a2a28" stroke-width="2"/>
+    <circle cx="470" cy="110" r="40" fill="#c4502f"/>
+    <text x="44" y="78" font-family="Helvetica, Arial, sans-serif" font-size="30" font-weight="600" letter-spacing="10" fill="#faf8f4">NOVA</text>
+    <text x="44" y="300" font-family="Georgia, serif" font-style="italic" font-size="44" fill="#faf8f4">Gift card</text>
+    <text x="44" y="334" font-family="Helvetica, Arial, sans-serif" font-size="16" letter-spacing="3" fill="#8a857c">OBJECTS FOR FOCUS</text>
+  </g>
+</svg>
