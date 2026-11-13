@@ -44,6 +44,7 @@
     "node_modules",
     "build",
     ".agents",
-    ".claude"
+    ".claude",
+    "scripts"
   ]
 }
