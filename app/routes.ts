@@ -37,6 +37,7 @@ export default [
     route("quick-view", "routes/quick-view.ts"),
     route("recommendations", "routes/recommendations.ts"),
     route("product-cards", "routes/product-cards.ts"),
+    route("lab-probe", "routes/lab-probe.ts"),
     route("lab", "routes/lab.tsx", [index("routes/lab._index.tsx"), route(":section", "routes/lab.$section.tsx")]),
     route("*", "routes/$.tsx"),
   ]),

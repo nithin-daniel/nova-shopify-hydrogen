@@ -19,6 +19,7 @@ import type { MiddlewareFunction } from "react-router";
 import { handleMockMcp } from "~/lib/mock-api/mcp.server";
 import { createMockStorefrontFetch, handleMockStorefrontProxy } from "~/lib/mock-api/storefront/index.server";
 import { shopifyContext } from "./context";
+import type { ShopifyLocale } from "@shopify/hydrogen";
 import { createCustomerAccess, getCustomerAccountHandlers } from "./customer.server";
 import { getEnv } from "./env.server";
 import { cartHandlers, predictiveSearchHandlers } from "./handlers.server";
@@ -108,3 +109,18 @@ export const shopifyMiddleware: MiddlewareFunction<Response> = async ({ request,
   if (env.demoMode) response.headers.set("x-nova-demo-mode", "true");
   return response;
 };
+
+/** A request-independent client pinned to one market (used by the lab's market comparison). */
+export function createStorefrontForLocale(locale: ShopifyLocale, origin: string) {
+  const env = getEnv();
+  const requestContext = createShopifyRequestContext({ request: { headers: new Headers() }, i18n, locale });
+  return createStorefrontClient({
+    type: "public",
+    requestContext,
+    config: {
+      storeDomain: env.storeDomain,
+      publicStorefrontToken: env.publicStorefrontToken,
+      ...(env.demoMode ? { fetch: createMockStorefrontFetch(origin) } : {}),
+    },
+  });
+}
