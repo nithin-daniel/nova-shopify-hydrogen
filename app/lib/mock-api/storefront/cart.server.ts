@@ -81,22 +81,6 @@ function codeAppliesTo(discount: MockDiscountCode, product: MockProduct) {
   return true;
 }
 
-/** Splits `amount` across lines proportionally to their weights (largest remainder). */
-function allocate(amount: number, weights: number[]) {
-  const total = weights.reduce((a, b) => a + b, 0);
-  if (total <= 0) return weights.map(() => 0);
-  const raw = weights.map((w) => (amount * w) / total);
-  const floored = raw.map(Math.floor);
-  let remainder = amount - floored.reduce((a, b) => a + b, 0);
-  const order = raw.map((r, i) => [r - Math.floor(r), i] as const).sort((a, b) => b[0] - a[0]);
-  for (const [, i] of order) {
-    if (remainder <= 0) break;
-    floored[i] += 1;
-    remainder -= 1;
-  }
-  return floored;
-}
-
 export function priceCart(cart: StoredCart, market: MockMarket) {
   const lines: PricedLine[] = cart.lines.flatMap((stored) => {
     const found = findVariant(stored.variantId);

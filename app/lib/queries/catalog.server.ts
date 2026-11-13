@@ -44,7 +44,7 @@ export const PRODUCT_CARD_FRAGMENT = gql(`
   }
 `);
 
-const PRODUCT_CARD_SHAPE = gql(`query ProductCardShape { products(first: 1) { nodes { ...ProductCard } } }`, [PRODUCT_CARD_FRAGMENT]);
+export const PRODUCT_CARD_SHAPE = gql(`query ProductCardShape { products(first: 1) { nodes { ...ProductCard } } }`, [PRODUCT_CARD_FRAGMENT]);
 export type ProductCardData = StorefrontApi.ResultOf<typeof PRODUCT_CARD_SHAPE>["products"]["nodes"][number];
 
 export const COLLECTION_CARD_FRAGMENT = gql(`
@@ -57,7 +57,7 @@ export const COLLECTION_CARD_FRAGMENT = gql(`
     kicker: metafield(namespace: "nova", key: "kicker") { value }
   }
 `);
-const COLLECTION_CARD_SHAPE = gql(`query CollectionCardShape { collections(first: 1) { nodes { ...CollectionCard } } }`, [COLLECTION_CARD_FRAGMENT]);
+export const COLLECTION_CARD_SHAPE = gql(`query CollectionCardShape { collections(first: 1) { nodes { ...CollectionCard } } }`, [COLLECTION_CARD_FRAGMENT]);
 export type CollectionCardData = StorefrontApi.ResultOf<typeof COLLECTION_CARD_SHAPE>["collections"]["nodes"][number];
 
 /** Root layout: shop identity and navigation collections. */
