@@ -324,7 +324,8 @@ export function createStorefrontRoots(ctx: MockRequestContext) {
         const a = BLOG.articles.find((x) => x.id === id);
         return a ? toArticle(a, ctx) : null;
       },
-      articles: (args: ConnectionArgs) => connection(BLOG.articles, args, (a) => toArticle(a, ctx)),
+      articles: (args: ConnectionArgs & { sortKey?: string }) =>
+        connection(args.sortKey === "PUBLISHED_AT" ? [...BLOG.articles].sort((a, b) => a.publishedAt.localeCompare(b.publishedAt)) : BLOG.articles, args, (a) => toArticle(a, ctx)),
       menu: ({ handle }: { handle: string }) => {
         const items = MENUS[handle as keyof typeof MENUS];
         if (!items) return null;

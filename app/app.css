@@ -1,15 +1,267 @@
 @import "tailwindcss";
 
+/* ==========================================================================
+   NOVA design system
+   Tokens live in @theme so every utility (bg-bone, text-ink, font-display…)
+   is generated from one source. Component primitives live in @layer components.
+   ========================================================================== */
+
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  /* Typography */
+  --font-sans: "Inter Tight", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-serif: "Instrument Serif", ui-serif, Georgia, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Colour: warm neutrals, one accent, semantic states */
+  --color-paper: #faf8f4;
+  --color-bone: #f3efe8;
+  --color-sand: #e9e3d8;
+  --color-line: #ddd6ca;
+  --color-stone: #8a857c;
+  --color-graphite: #3b3a37;
+  --color-ink: #141414;
+  --color-ember: #c4502f;
+  --color-ember-soft: #f4e2da;
+  --color-moss: #4c5e46;
+  --color-moss-soft: #e3e9df;
+  --color-amber: #9a6a14;
+  --color-amber-soft: #f5ead2;
+  --color-danger: #a8321f;
+  --color-danger-soft: #f6dfda;
+  --color-code: #1b1b19;
+
+  /* Type scale (fluid) */
+  --text-micro: 0.6875rem;
+  --text-micro--line-height: 1rem;
+  --text-display-sm: clamp(2rem, 1.4rem + 2.4vw, 3rem);
+  --text-display-sm--line-height: 1.02;
+  --text-display: clamp(2.75rem, 1.6rem + 4.6vw, 5.5rem);
+  --text-display--line-height: 0.96;
+  --text-display-xl: clamp(3.25rem, 1.4rem + 7.6vw, 8.5rem);
+  --text-display-xl--line-height: 0.9;
+
+  /* Spacing additions + radii (restrained: mostly square, soft on controls) */
+  --spacing-gutter: clamp(1rem, 0.5rem + 2.2vw, 2.5rem);
+  --spacing-section: clamp(4rem, 2.5rem + 6vw, 9rem);
+  --radius-control: 999px;
+  --radius-card: 2px;
+
+  /* Motion */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --animate-fade-up: fade-up 700ms var(--ease-out-expo) both;
+  --animate-shimmer: shimmer 1.6s linear infinite;
+
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes shimmer {
+    from { background-position: -200% 0; }
+    to { background-position: 200% 0; }
+  }
 }
 
-html,
-body {
-  @apply bg-white dark:bg-gray-950;
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    scroll-padding-top: 5rem;
+  }
+  body {
+    @apply bg-paper font-sans text-ink;
+    font-feature-settings: "ss01", "cv11";
+    letter-spacing: -0.005em;
+  }
+  ::selection { background: var(--color-ink); color: var(--color-paper); }
+  :focus-visible { outline: 2px solid var(--color-ember); outline-offset: 3px; }
+  button, [role="button"], summary, label[for] { cursor: pointer; }
+  button:disabled { cursor: not-allowed; }
+  input[type="number"]::-webkit-inner-spin-button { opacity: 0.4; }
+  img { color: transparent; }
+  details > summary { list-style: none; }
+  details > summary::-webkit-details-marker { display: none; }
+}
 
-  @media (prefers-color-scheme: dark) {
-    color-scheme: dark;
+@layer components {
+  .container-nova { @apply mx-auto w-full max-w-[1440px] px-gutter; }
+  .eyebrow { @apply text-micro font-medium uppercase tracking-[0.18em] text-stone; }
+  .display { @apply font-medium tracking-[-0.035em]; }
+  .serif-accent { @apply font-serif font-normal italic tracking-[-0.01em]; }
+  .hairline { @apply border-line; }
+  .link-underline {
+    background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+    transition: background-size 400ms var(--ease-out-expo);
+  }
+  .link-underline:hover, .link-underline:focus-visible { background-size: 100% 1px; }
+
+  /* Buttons --------------------------------------------------------------- */
+  .btn {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-[var(--radius-control)] px-6 text-sm font-medium tracking-[-0.005em] whitespace-nowrap select-none;
+    transition: background-color 200ms, color 200ms, border-color 200ms, transform 200ms var(--ease-soft), opacity 200ms;
+  }
+  .btn:active:not(:disabled) { transform: scale(0.98); }
+  .btn:disabled, .btn[aria-disabled="true"] { @apply opacity-40; }
+  .btn-primary { @apply bg-ink text-paper hover:bg-graphite; }
+  .btn-accent { @apply bg-ember text-paper hover:bg-[#ad4427]; }
+  .btn-secondary { @apply border border-ink/80 text-ink hover:bg-ink hover:text-paper; }
+  .btn-ghost { @apply px-3 text-ink hover:bg-ink/5; }
+  .btn-light { @apply bg-paper text-ink hover:bg-bone; }
+  .btn-sm { @apply min-h-9 px-4 text-[0.8125rem]; }
+  .btn-icon { @apply min-h-10 w-10 px-0; }
+
+  /* Inputs ------------------------------------------------------------------ */
+  .field-label { @apply mb-1.5 block text-[0.8125rem] font-medium text-graphite; }
+  .input {
+    @apply block min-h-11 w-full rounded-none border-0 border-b border-line bg-transparent px-0 py-2 text-[0.9375rem] text-ink placeholder:text-stone;
+    transition: border-color 200ms;
+  }
+  .input:focus { @apply border-ink outline-none; }
+  .input[aria-invalid="true"] { @apply border-danger; }
+  .input-boxed { @apply rounded-[6px] border bg-paper px-3.5; }
+  .field-error { @apply mt-1.5 text-[0.8125rem] text-danger; }
+  .checkbox { @apply size-4 shrink-0 appearance-none rounded-[3px] border border-stone bg-paper; }
+  .checkbox:checked { @apply border-ink bg-ink; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4 8.5l2.5 2.5L12 5.5' stroke='%23faf8f4' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }
+
+  /* Badges and chips -------------------------------------------------------- */
+  .badge { @apply inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-micro font-medium uppercase tracking-[0.12em]; }
+  .badge-neutral { @apply bg-paper/90 text-ink backdrop-blur; }
+  .badge-ember { @apply bg-ember text-paper; }
+  .badge-ink { @apply bg-ink text-paper; }
+  .badge-moss { @apply bg-moss-soft text-moss; }
+  .badge-amber { @apply bg-amber-soft text-amber; }
+  .chip { @apply inline-flex min-h-8 items-center gap-1.5 rounded-full border border-line bg-paper px-3 text-[0.8125rem] hover:border-ink; }
+
+  /* Status lozenges used in lab + account ---------------------------------- */
+  .status { @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[0.75rem] font-medium; }
+  .status::before { content: ""; @apply size-1.5 rounded-full bg-current; }
+  .status-real { @apply bg-moss-soft text-moss; }
+  .status-mock { @apply bg-amber-soft text-amber; }
+  .status-creds { @apply bg-ember-soft text-ember; }
+  .status-custom { @apply bg-sand text-graphite; }
+  .status-na { @apply bg-bone text-stone; }
+
+  /* Pending (optimistic, unconfirmed) values ------------------------------- */
+  .is-pending { opacity: 0.35; transition: opacity 150ms; }
+
+  .skeleton {
+    background: linear-gradient(90deg, var(--color-bone) 25%, var(--color-sand) 50%, var(--color-bone) 75%);
+    background-size: 200% 100%;
+    animation: var(--animate-shimmer);
+  }
+
+  /* Rich text --------------------------------------------------------------- */
+  .prose-nova { @apply max-w-[68ch] text-[1.0625rem] leading-[1.7] text-graphite; }
+  .prose-nova h2 { @apply mt-12 mb-4 text-2xl font-medium tracking-[-0.02em] text-ink; }
+  .prose-nova h3 { @apply mt-8 mb-2 text-lg font-medium text-ink; }
+  .prose-nova p { @apply mb-5; }
+  .prose-nova p.lead { @apply font-serif text-[1.6rem] leading-[1.35] text-ink italic; }
+  .prose-nova ul, .prose-nova ol { @apply mb-5 space-y-1.5 pl-5; }
+  .prose-nova ul { list-style: disc; }
+  .prose-nova ol { list-style: decimal; }
+  .prose-nova a { @apply underline decoration-line underline-offset-4 hover:decoration-ink; }
+  .prose-nova strong { @apply font-medium text-ink; }
+
+  /* Code -------------------------------------------------------------------- */
+  .code-block { @apply overflow-x-auto rounded-[4px] bg-code p-4 font-mono text-[0.78rem] leading-[1.65] text-[#e7e3da]; tab-size: 2; }
+  .code-inline { @apply rounded-[3px] bg-bone px-1.5 py-0.5 font-mono text-[0.85em] text-ink; }
+
+  /* Scroll rails ------------------------------------------------------------ */
+  .rail { @apply flex snap-x snap-mandatory gap-4 overflow-x-auto pb-4; scrollbar-width: none; }
+  .rail::-webkit-scrollbar { display: none; }
+  .rail > * { @apply snap-start; }
+}
+
+/* ==========================================================================
+   Dialogs: cart drawer, search overlay, quick view, mobile menu
+   Native <dialog> + showModal(): focus trap, Escape, inert background and
+   ::backdrop come free. closedby="any" adds light dismiss where supported.
+   ========================================================================== */
+dialog.drawer {
+  position: fixed;
+  inset-block: 0;
+  inset-inline: auto 0;
+  margin: 0;
+  width: 100%;
+  max-width: 30rem;
+  height: 100dvh;
+  max-height: none;
+  border: 0;
+  padding: 0;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  transform: translateX(100%);
+  transition: transform 420ms var(--ease-out-expo), overlay 420ms allow-discrete, display 420ms allow-discrete;
+}
+dialog.drawer.drawer-left { inset-inline: 0 auto; transform: translateX(-100%); }
+dialog.drawer[open] { transform: translateX(0); }
+@starting-style {
+  dialog.drawer[open] { transform: translateX(100%); }
+  dialog.drawer.drawer-left[open] { transform: translateX(-100%); }
+}
+
+dialog.overlay {
+  position: fixed;
+  inset: 0 0 auto 0;
+  margin: 0;
+  width: 100%;
+  max-width: none;
+  max-height: min(100dvh, 46rem);
+  border: 0;
+  padding: 0;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  opacity: 0;
+  transform: translateY(-12px);
+  transition: opacity 300ms var(--ease-soft), transform 420ms var(--ease-out-expo), overlay 420ms allow-discrete, display 420ms allow-discrete;
+}
+dialog.overlay[open] { opacity: 1; transform: none; }
+@starting-style { dialog.overlay[open] { opacity: 0; transform: translateY(-12px); } }
+
+dialog.modal {
+  margin: auto;
+  width: min(100% - 2rem, 64rem);
+  max-height: min(100dvh - 2rem, 48rem);
+  border: 0;
+  padding: 0;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  opacity: 0;
+  transform: scale(0.97);
+  transition: opacity 250ms, transform 350ms var(--ease-out-expo), overlay 350ms allow-discrete, display 350ms allow-discrete;
+}
+dialog.modal[open] { opacity: 1; transform: none; }
+@starting-style { dialog.modal[open] { opacity: 0; transform: scale(0.97); } }
+
+dialog.drawer::backdrop, dialog.overlay::backdrop, dialog.modal::backdrop {
+  background: rgb(20 20 20 / 0);
+  backdrop-filter: blur(0);
+  transition: background-color 300ms, backdrop-filter 300ms, overlay 300ms allow-discrete, display 300ms allow-discrete;
+}
+dialog.drawer[open]::backdrop, dialog.overlay[open]::backdrop, dialog.modal[open]::backdrop {
+  background: rgb(20 20 20 / 0.36);
+  backdrop-filter: blur(2px);
+}
+@starting-style {
+  dialog.drawer[open]::backdrop, dialog.overlay[open]::backdrop, dialog.modal[open]::backdrop { background: rgb(20 20 20 / 0); }
+}
+body:has(dialog[open]) { overflow: hidden; }
+
+/* Reveal-on-scroll (progressive: content is visible without JS) */
+@supports (animation-timeline: view()) {
+  .reveal {
+    animation: fade-up linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 40%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
