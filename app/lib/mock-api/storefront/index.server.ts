@@ -374,6 +374,53 @@ export async function handleMockStorefrontProxy(request: Request) {
   const origin = new URL(request.url).origin;
   if (request.method !== "POST") return Response.json({ errors: [{ message: "Use POST" }] }, { status: 405 });
   const body = (await request.json().catch(() => ({}))) as Parameters<typeof runMockGraphql>[1];
+  if (body.query?.includes("consentManagement")) return mockConsentManagement(body.query);
   const result = await runMockGraphql(mockStorefrontServer(origin), body);
   return Response.json(result, { headers: { "x-nova-mock-api": "storefront", "cache-control": "no-store" } });
+}
+
+/**
+ * SIMULATED Shopify consent backend. Shopify's Customer Privacy script calls
+ * `consentManagement` on the same-origin SFAPI proxy (`/api/unstable/graphql.json`)
+ * to turn the shopper's choice into the `_tracking_consent` cookie. That field
+ * is an unstable/internal API missing from the packaged schema, so in DEMO_MODE
+ * we answer it here with the documented cookie shape (v2.1). With a real store
+ * the proxy forwards it to Shopify.
+ */
+function mockConsentManagement(query: string) {
+  const read = (name: string) => {
+    const match = new RegExp(`${name}:(true|false)`).exec(query);
+    return match ? match[1] === "true" : null;
+  };
+  const value = (v: boolean | null) => (v === null ? "" : v ? "1" : "0");
+  const analytics = read("analytics");
+  const marketing = read("marketing");
+  const preferences = read("preferences");
+  const saleOfData = read("saleOfData");
+  const cookie = {
+    v: "2.1",
+    con: { CMP: { a: value(analytics), m: value(marketing), p: value(preferences), s: value(saleOfData) } },
+    region: "US",
+    purposes: { a: analytics ?? true, p: preferences ?? true, m: marketing ?? true, t: saleOfData ?? true },
+    sale_of_data_region: false,
+    reg: "",
+  };
+  return Response.json(
+    {
+      data: {
+        consentManagement: {
+          cookies: {
+            trackingConsentCookie: encodeURIComponent(JSON.stringify(cookie)),
+            cookieDomain: "",
+            landingPageCookie: "",
+            origReferrerCookie: "",
+            shopifyUnique: crypto.randomUUID(),
+            shopifyVisit: crypto.randomUUID(),
+          },
+          customerAccountUrl: null,
+        },
+      },
+    },
+    { headers: { "x-nova-mock-api": "consent (simulated)", "cache-control": "no-store" } },
+  );
 }

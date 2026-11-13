@@ -1,4 +1,4 @@
-import { forwardRef } from "react";
+import { forwardRef, useCallback } from "react";
 import { Link as RouterLink, NavLink as RouterNavLink, useRouteLoaderData, type LinkProps, type NavLinkProps } from "react-router";
 import type { AppLocale } from "~/lib/shopify/i18n";
 
@@ -21,7 +21,7 @@ export function localizePath(path: string, pathPrefix: string) {
 
 export function useLocalizedPath() {
   const { pathPrefix } = useLocale();
-  return (path: string) => localizePath(path, pathPrefix);
+  return useCallback((path: string) => localizePath(path, pathPrefix), [pathPrefix]);
 }
 
 function localizeTo(to: LinkProps["to"], prefix: string): LinkProps["to"] {

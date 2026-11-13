@@ -138,6 +138,17 @@ export default function Home({ loaderData }: Route.ComponentProps) {
               </Link>
             );
           })}
+          <Link to="/collections" className="group col-span-2 flex flex-col justify-between bg-ink p-6 text-paper md:col-span-5 md:p-8">
+            <p className="eyebrow text-paper/50">Not sure where to start?</p>
+            <div>
+              <p className="display text-3xl md:text-4xl">
+                Browse every <span className="serif-accent">collection.</span>
+              </p>
+              <p className="mt-4 inline-flex items-center gap-2 text-sm text-paper/70">
+                Sound, studio, desk, light, power and mobile <Icon name="arrow" size={16} className="transition-transform group-hover:translate-x-1" />
+              </p>
+            </div>
+          </Link>
         </div>
       </section>
 
