@@ -168,7 +168,7 @@ function sortOrders(orders: MockOrder[], sortKey?: string) {
   return list.sort((a, b) => a.processedAt.localeCompare(b.processedAt));
 }
 
-type AddressInput = { firstName?: string; lastName?: string; company?: string; address1?: string; address2?: string; city?: string; zoneCode?: string; zip?: string; territoryCode?: string; countryCode?: string; phoneNumber?: string };
+type AddressInput = { firstName?: string; lastName?: string; company?: string; address1?: string; address2?: string; city?: string; zoneCode?: string; zip?: string; countryCode?: string; phoneNumber?: string };
 
 const COUNTRY_NAMES: Record<string, string> = { US: "United States", CA: "Canada", GB: "United Kingdom", DE: "Germany", FR: "France", AU: "Australia", JP: "Japan" };
 
@@ -249,8 +249,8 @@ function createRoots(ctx: MockRequestContext) {
           provinceCode: address.zoneCode,
           province: address.zoneCode,
           zip: address.zip!,
-          countryCode: address.territoryCode ?? address.countryCode ?? "US",
-          country: COUNTRY_NAMES[address.territoryCode ?? address.countryCode ?? "US"] ?? (address.territoryCode ?? "US"),
+          countryCode: address.countryCode ?? "US",
+          country: COUNTRY_NAMES[address.countryCode ?? "US"] ?? (address.countryCode ?? "US"),
           phone: address.phoneNumber,
         };
         mutateAddresses((list, o) => {
@@ -272,7 +272,7 @@ function createRoots(ctx: MockRequestContext) {
               ...a,
               ...stripUndefined({ firstName: address?.firstName, lastName: address?.lastName, company: address?.company, address1: address?.address1, address2: address?.address2, city: address?.city, zip: address?.zip, phone: address?.phoneNumber }),
               ...(address?.zoneCode ? { provinceCode: address.zoneCode, province: address.zoneCode } : {}),
-              ...(address?.territoryCode ? { countryCode: address.territoryCode, country: COUNTRY_NAMES[address.territoryCode] ?? address.territoryCode } : {}),
+              ...(address?.countryCode ? { countryCode: address.countryCode, country: COUNTRY_NAMES[address.countryCode] ?? address.countryCode } : {}),
             };
             return updated;
           });
