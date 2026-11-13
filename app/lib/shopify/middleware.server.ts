@@ -16,6 +16,7 @@ import {
   type ShopifyRouteHandlerGroup,
 } from "@shopify/hydrogen";
 import type { MiddlewareFunction } from "react-router";
+import { handleDemoOnlyRoutes } from "~/lib/mock-api/demo-routes.server";
 import { handleMockMcp } from "~/lib/mock-api/mcp.server";
 import { createMockStorefrontFetch, handleMockStorefrontProxy } from "~/lib/mock-api/storefront/index.server";
 import { shopifyContext } from "./context";
@@ -55,8 +56,11 @@ export const shopifyMiddleware: MiddlewareFunction<Response> = async ({ request,
   const url = new URL(request.url);
 
   if (env.demoMode) {
+    // The demo store is fictional: never proxy or redirect to a real Shopify domain.
     if (SFAPI_PROXY_RE.test(url.pathname)) return handleMockStorefrontProxy(request);
-    if (url.pathname === "/api/mcp") return handleMockMcp(request);
+    if (url.pathname === "/api/mcp" || url.pathname === "/api/ucp/mcp") return handleMockMcp(request);
+    const demoRoute = await handleDemoOnlyRoutes(request, url);
+    if (demoRoute) return demoRoute;
   }
 
   const requestContext = createShopifyRequestContext({ request: localeRequest(request, url), i18n });

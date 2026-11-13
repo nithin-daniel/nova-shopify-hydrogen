@@ -129,9 +129,9 @@ const PROBES = [
   { label: "POST SFAPI proxy", path: "/api/2026-10/graphql.json", method: "POST", body: JSON.stringify({ query: "{ shop { name } }" }), note: "Same-origin Storefront API proxy" },
   { label: "GET /checkout", path: "/checkout", note: "302 → cart.checkoutUrl (needs a cart)" },
   { label: "?variant= redirect", path: "/products/halo-anc-headphones?variant=48800000103", note: "302 → canonical option params via routeTemplates" },
-  { label: "GET /admin", path: "/admin", note: "Redirects to the shop admin (after 404)" },
-  { label: "Cart permalink", path: "/cart/48800001500:1", note: "Redirects to the store's cart permalink (needs a real store)" },
-  { label: "/.well-known/ucp", path: "/.well-known/ucp", note: "UCP business profile proxy (needs a real store)" },
+  { label: "GET /admin", path: "/admin", note: "Live: redirect to Shopify Admin. Demo: explained locally" },
+  { label: "Cart permalink", path: "/cart/48800001500:1", note: "Live: store permalink. Demo: mock cart + cart cookie → checkout" },
+  { label: "/.well-known/ucp", path: "/.well-known/ucp", note: "Live: Shopify UCP profile proxy. Demo: simulated profile" },
   { label: "GET /robots.txt", path: "/robots.txt", note: "App-owned robots route" },
   { label: "Unknown path", path: "/this/does-not-exist", note: "Router 404 → handleShopifyRedirects → 404" },
 ];
@@ -397,13 +397,17 @@ function FormatMoney() {
 
 function AnalyticsLog() {
   const [events, setEvents] = useState<InspectedEvent[]>([]);
-  const [status, setStatus] = useState({ ...consentStatus, stored: null as string | null });
+  const [status, setStatus] = useState({ ...consentStatus, stored: null as string | null, allowed: "…" });
   useEffect(() => {
     setEvents([...inspectedEvents]);
-    setStatus({ ...consentStatus, stored: readConsent() });
-    const onEvent = () => setEvents([...inspectedEvents]);
+    const read = () => setStatus({ ...consentStatus, stored: readConsent(), allowed: String(window.Shopify?.customerPrivacy?.analyticsProcessingAllowed?.() ?? "n/a") });
+    read();
+    const onEvent = () => {
+      setEvents([...inspectedEvents]);
+      read();
+    };
     window.addEventListener(ANALYTICS_EVENT, onEvent);
-    const off = onConsentStatus(() => setStatus({ ...consentStatus, stored: readConsent() }));
+    const off = onConsentStatus(read);
     return () => {
       window.removeEventListener(ANALYTICS_EVENT, onEvent);
       off();
@@ -412,7 +416,7 @@ function AnalyticsLog() {
   return (
     <div className="space-y-5">
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-sm">Consent: <strong className="font-medium">{status.stored ?? "not chosen"}</strong> · sync: {status.phase}{status.error ? ` (${status.error})` : ""} · analyticsProcessingAllowed: {typeof window !== "undefined" ? String(window.Shopify?.customerPrivacy?.analyticsProcessingAllowed?.() ?? "n/a") : "…"}</span>
+        <span className="text-sm">Consent: <strong className="font-medium">{status.stored ?? "not chosen"}</strong> · sync: {status.phase}{status.error ? ` (${status.error})` : ""} · analyticsProcessingAllowed: {status.allowed}</span>
       </div>
       <div className="flex flex-wrap gap-2">
         <Btn onClick={() => chooseConsent("accepted")}>Accept</Btn>
