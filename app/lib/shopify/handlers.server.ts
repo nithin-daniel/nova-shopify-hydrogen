@@ -7,18 +7,14 @@ import { createCartServerHandlers, createPredictiveSearchServerHandlers, gql } f
 
 /**
  * Extra cart fields on top of Hydrogen's base cart fragment:
- * - discount allocations (line-level and cart-level) for discount UI
+ * - discount allocations per line, including each line's share of order-level
+ *   discounts (Cart.discountAllocations is deprecated in 2026-10)
  * - applied gift cards
  * - compare-at prices for "you save" on lines
  */
 const CART_FRAGMENT = gql(`
   fragment CartFragment on Cart {
     buyerIdentity { countryCode }
-    discountAllocations {
-      discountedAmount { amount currencyCode }
-      ... on CartCodeDiscountAllocation { code }
-      ... on CartAutomaticDiscountAllocation { title }
-    }
     appliedGiftCards {
       id
       lastCharacters
@@ -28,7 +24,8 @@ const CART_FRAGMENT = gql(`
     lines(first: 250) {
       nodes {
         id
-        discountAllocations {
+        # lineLevelOnly: false also returns this line's share of order-level discounts
+        discountAllocations(lineLevelOnly: false) {
           discountedAmount { amount currencyCode }
           ... on CartCodeDiscountAllocation { code }
           ... on CartAutomaticDiscountAllocation { title }

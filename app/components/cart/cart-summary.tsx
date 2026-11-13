@@ -231,7 +231,7 @@ export function GiftWrapToggle() {
 
 export function CartTotals() {
   const cost = useCart((s) => s.data.cost);
-  const allocations = useCart((s) => s.data.discountAllocations ?? []);
+  const codes = useCart((s) => s.data.discountCodes);
   const giftCards = useCart((s) => s.data.appliedGiftCards ?? []);
   const pending = useCart((s) => s.pending.cost || s.revalidating);
   const { intlLocale } = useLocale();
@@ -243,12 +243,12 @@ export function CartTotals() {
         <dt className="text-graphite">Subtotal</dt>
         <dd className="tabular-nums">{formatPrice(cost.subtotalAmount, intlLocale)}</dd>
       </div>
-      {allocations.map((a, i) => (
-        <div key={i} className="flex justify-between text-ember">
-          <dt>{"code" in a && a.code ? `Discount (${a.code})` : "title" in a && a.title ? a.title : "Discount"}</dt>
-          <dd className="tabular-nums">−{formatPrice(a.discountedAmount, intlLocale)}</dd>
+      {codes.some((c) => c.applicable) ? (
+        <div className="flex justify-between text-ember">
+          <dt>Discounts applied</dt>
+          <dd>{codes.filter((c) => c.applicable).map((c) => c.code).join(", ")}</dd>
         </div>
-      ))}
+      ) : null}
       <div className="flex justify-between text-graphite">
         <dt>Shipping &amp; taxes</dt>
         <dd>Calculated at checkout</dd>

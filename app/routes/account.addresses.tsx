@@ -113,7 +113,7 @@ function AddressForm({ address, intent, onDone }: { address?: Address; intent: "
       {f("zip", "Postal code", address?.zip, { required: true, autoComplete: "postal-code" })}
       <div>
         <label htmlFor={`${id}-country`} className="field-label">Country</label>
-        <select id={`${id}-country`} name="territoryCode" defaultValue={address?.territoryCode ?? "US"} className="input">
+        <select id={`${id}-country`} name="territoryCode" defaultValue={address?.countryCode ?? "US"} className="input">
           {[["US", "United States"], ["CA", "Canada"], ["GB", "United Kingdom"], ["FR", "France"], ["DE", "Germany"], ["AU", "Australia"], ["JP", "Japan"]].map(([c, n]) => <option key={c} value={c}>{n}</option>)}
         </select>
       </div>

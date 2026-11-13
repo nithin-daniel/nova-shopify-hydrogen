@@ -2,11 +2,14 @@ import { data, Form, useNavigation } from "react-router";
 import type { Route } from "./+types/account._index";
 import { Price, ShopImage } from "~/components/ui";
 import { requireCustomer } from "~/lib/account.server";
+import { shopifyContext } from "~/lib/shopify/context";
 import { statusLabel } from "~/lib/storefront/order-status";
 import { CUSTOMER_QUERY, CUSTOMER_UPDATE } from "~/lib/queries/account.server";
 import { Link } from "~/lib/storefront/locale";
 
 export async function loader({ context, request }: Route.LoaderArgs) {
+  // Signed out: the layout renders the sign-in panel (no redirect, no token reads).
+  if (!(await context.get(shopifyContext).customer.isLoggedIn())) return { customer: null, error: null };
   const { client, accessToken } = await requireCustomer(context, request);
   const { data: result, errors } = await client.graphql(CUSTOMER_QUERY, { accessToken });
   if (errors || !result?.customer) return { customer: null, error: "We couldn't load your account right now." };
@@ -27,7 +30,7 @@ export async function action({ context, request }: Route.ActionArgs) {
 
 export default function AccountOverview({ loaderData, actionData }: Route.ComponentProps) {
   const navigation = useNavigation();
-  if (!loaderData.customer) return <p role="alert" className="text-danger">{loaderData.error}</p>;
+  if (!loaderData.customer) return loaderData.error ? <p role="alert" className="text-danger">{loaderData.error}</p> : null;
   const c = loaderData.customer;
   return (
     <div className="space-y-14">

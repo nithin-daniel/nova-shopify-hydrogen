@@ -8,6 +8,7 @@
  *   DEMO_MODE → mock reviews; live → no text provider configured (UI hides
  *   the list and still shows metafield ratings when present).
  */
+import { REVIEWS } from "~/mocks/reviews";
 import { getEnv } from "~/lib/shopify/env.server";
 
 export type Review = {
@@ -36,7 +37,6 @@ const noReviews: ReviewsProvider = {
 
 export async function getReviewsProvider(): Promise<ReviewsProvider> {
   if (!getEnv().demoMode) return noReviews;
-  const { REVIEWS } = await import("~/mocks/reviews");
   return {
     source: "mock",
     forProduct: async (handle) => REVIEWS.filter((r) => r.productHandle === handle).sort((a, b) => b.createdAt.localeCompare(a.createdAt)),

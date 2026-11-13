@@ -81,6 +81,22 @@ function codeAppliesTo(discount: MockDiscountCode, product: MockProduct) {
   return true;
 }
 
+/** Splits `amount` across lines proportionally to their weights (largest remainder). */
+function allocate(amount: number, weights: number[]) {
+  const total = weights.reduce((a, b) => a + b, 0);
+  if (total <= 0) return weights.map(() => 0);
+  const raw = weights.map((w) => (amount * w) / total);
+  const floored = raw.map(Math.floor);
+  let remainder = amount - floored.reduce((a, b) => a + b, 0);
+  const order = raw.map((r, i) => [r - Math.floor(r), i] as const).sort((a, b) => b[0] - a[0]);
+  for (const [, i] of order) {
+    if (remainder <= 0) break;
+    floored[i] += 1;
+    remainder -= 1;
+  }
+  return floored;
+}
+
 export function priceCart(cart: StoredCart, market: MockMarket) {
   const lines: PricedLine[] = cart.lines.flatMap((stored) => {
     const found = findVariant(stored.variantId);
@@ -168,7 +184,9 @@ export function priceCart(cart: StoredCart, market: MockMarket) {
     return [{ card, balance, used }];
   });
 
-  return { lines, lineTotals, codeResults, orderAllocations, subtotal, orderDiscount, total, giftCards, checkoutCharge: remaining, merchandise };
+  // Each line's share of every order-level allocation (CartLine.discountAllocations(lineLevelOnly: false)).
+  const orderShares = orderAllocations.map((a) => ({ code: a.code, shares: allocate(a.amount, lineTotals) }));
+  return { lines, lineTotals, codeResults, orderAllocations, orderShares, subtotal, orderDiscount, total, giftCards, checkoutCharge: remaining, merchandise };
 }
 
 // ---------------------------------------------------------------------------
@@ -200,7 +218,15 @@ export function toCart(cart: StoredCart, ctx: MockRequestContext) {
         totalAmount: m(priced.lineTotals[i]),
       },
       estimatedCost: { amount: m(priced.lineTotals[i]), totalAmount: m(priced.lineTotals[i]), subtotalAmount: m(line.subtotal), compareAtAmount: line.compareAt ? m(line.compareAt * line.stored.quantity) : null },
-      discountAllocations: () => lineAllocations,
+      discountAllocations: ({ lineLevelOnly }: { lineLevelOnly?: boolean }) =>
+        lineLevelOnly === false
+          ? [
+              ...lineAllocations,
+              ...priced.orderShares
+                .filter((o) => o.shares[i] > 0)
+                .map((o) => ({ __typename: "CartCodeDiscountAllocation", code: o.code, discountedAmount: m(o.shares[i]), targetType: "LINE_ITEM", discountApplication: null, sourceDiscountApplication: null })),
+            ]
+          : lineAllocations,
       sellingPlanAllocation: null,
       parentRelationship: null,
       instructions: { canRemove: true, canUpdateQuantity: true },

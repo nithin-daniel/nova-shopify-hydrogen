@@ -5,7 +5,7 @@ import tseslint from "typescript-eslint";
 
 export default tseslint.config(
   {
-    ignores: ["build/**", ".react-router/**", "node_modules/**", ".agents/**", ".claude/**", "*-graphql-env.d.ts"],
+    ignores: ["build/**", ".tmp/**", "scripts/**", ".react-router/**", "node_modules/**", ".agents/**", ".claude/**", "*-graphql-env.d.ts"],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,

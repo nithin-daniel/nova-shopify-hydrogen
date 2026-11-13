@@ -10,7 +10,7 @@ type ResultOf<D> = D extends CustomerAccountDocument<infer R, any, string> ? R :
 
 const ADDRESS_FIELDS = gql(`
   fragment AddressFields on CustomerAddress {
-    id firstName lastName company address1 address2 city zoneCode zip territoryCode phoneNumber
+    id firstName lastName company address1 address2 city zoneCode zip countryCode phoneNumber
     formatted(withName: true, withCompany: true)
   }
 `);
