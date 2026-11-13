@@ -116,7 +116,7 @@ export function Price({
   const sale = isDiscounted(price, compareAt);
   return (
     <span className={`inline-flex items-baseline gap-2 tabular-nums ${pending ? "is-pending" : ""} ${className}`}>
-      {from ? <span className="text-stone">From</span> : null}
+      {from ? <span className="opacity-75">From</span> : null}
       <span className={sale ? "text-ember" : undefined}>{formatPrice(price, intlLocale)}</span>
       {sale ? (
         <s className="text-stone decoration-stone/60">

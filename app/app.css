@@ -17,14 +17,14 @@
   --color-bone: #f3efe8;
   --color-sand: #e9e3d8;
   --color-line: #ddd6ca;
-  --color-stone: #8a857c;
+  --color-stone: #66615a;
   --color-graphite: #3b3a37;
   --color-ink: #141414;
-  --color-ember: #c4502f;
+  --color-ember: #b3452a;
   --color-ember-soft: #f4e2da;
   --color-moss: #4c5e46;
   --color-moss-soft: #e3e9df;
-  --color-amber: #9a6a14;
+  --color-amber: #7a530f;
   --color-amber-soft: #f5ead2;
   --color-danger: #a8321f;
   --color-danger-soft: #f6dfda;
@@ -138,7 +138,7 @@
   .status::before { content: ""; @apply size-1.5 rounded-full bg-current; }
   .status-real { @apply bg-moss-soft text-moss; }
   .status-mock { @apply bg-amber-soft text-amber; }
-  .status-creds { @apply bg-ember-soft text-ember; }
+  .status-creds { @apply bg-ember-soft text-[#8f3a22]; }
   .status-custom { @apply bg-sand text-graphite; }
   .status-na { @apply bg-bone text-stone; }
 

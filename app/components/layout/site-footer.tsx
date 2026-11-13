@@ -24,7 +24,7 @@ export function NewsletterForm({ tone = "dark" }: { tone?: "dark" | "light" }) {
           {fetcher.state !== "idle" ? "Joining…" : done ? "Subscribed" : "Subscribe →"}
         </button>
       </div>
-      <p className={`mt-3 min-h-5 text-[0.8125rem] ${tone === "dark" ? "text-paper/60" : "text-stone"}`} role="status">
+      <p className={`mt-3 min-h-5 text-[0.8125rem] ${tone === "dark" ? "text-paper" : "text-stone"}`} role="status">
         {fetcher.data?.message ?? "Monthly notes on new releases, materials and sound. No spam."}
       </p>
     </fetcher.Form>

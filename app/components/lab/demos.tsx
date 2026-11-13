@@ -30,7 +30,7 @@ type Server = Record<string, unknown>;
 
 const Json = ({ value, max = 3500 }: { value: unknown; max?: number }) => {
   const text = typeof value === "string" ? value : JSON.stringify(value, null, 2);
-  return <pre className="code-block max-h-96 text-[0.72rem]">{text.length > max ? `${text.slice(0, max)}\n… (${text.length - max} more characters)` : text}</pre>;
+  return <pre tabIndex={0} className="code-block max-h-96 text-[0.72rem]">{text.length > max ? `${text.slice(0, max)}\n… (${text.length - max} more characters)` : text}</pre>;
 };
 const Btn = ({ children, onClick, disabled, active }: { children: ReactNode; onClick: () => void; disabled?: boolean; active?: boolean }) => (
   <button type="button" onClick={onClick} disabled={disabled} className={`btn btn-sm ${active ? "btn-primary" : "btn-secondary"}`}>{children}</button>
